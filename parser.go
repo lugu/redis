@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-
-	"github.com/vmihailenco/bufio"
 )
 
 //------------------------------------------------------------------------------
@@ -67,27 +65,23 @@ func readLine(rd reader) ([]byte, error) {
 }
 
 func readN(rd reader, n int) ([]byte, error) {
-	buf, err := rd.ReadN(n)
-	if err == bufio.ErrBufferFull {
-		newBuf := make([]byte, n)
-		r := copy(newBuf, buf)
-		buf = newBuf
 
-		for {
-			nn, err := rd.Read(buf[r:])
-			r += nn
-			if r >= n {
-				// Ignore error if we read enough.
-				break
-			}
-			if err != nil {
-				return nil, err
-			}
-		}
-	} else if err != nil {
-		return nil, err
-	}
-	return buf, nil
+    buf := make([]byte, n)
+    backup := buf
+
+    count, nn := 0, 0
+    var err error
+    for err == nil {
+        nn, err = rd.Read(buf)
+        count += nn
+        if count == n {
+            break
+        }
+        if nn < n {
+            buf = buf[nn:]
+        }
+    }
+    return backup, err
 }
 
 //------------------------------------------------------------------------------
