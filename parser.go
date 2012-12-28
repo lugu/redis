@@ -49,7 +49,6 @@ func appendReq(buf []byte, args []string) []byte {
 type reader interface {
 	ReadLine() ([]byte, bool, error)
 	Read([]byte) (int, error)
-	ReadN(n int) ([]byte, error)
 	Buffered() int
 }
 
